@@ -1,0 +1,3 @@
+const addRoom = () => {};
+
+export { addRoom };
