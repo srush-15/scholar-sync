@@ -34,4 +34,13 @@ const addSection = async (req,res) => {
     }
 };
 
-export { addSection };
+const getSections = async(req,res)=>{
+    try {
+        const existingSections = await Section.find().populate('department');
+        res.status(200).json(new ApiResponse(true,existingSections,"Sections fetched successfully"));
+      } catch (error) {
+        console.log("An error happened while getting Sections ",error);
+        res.status(500).json(new ApiResponse(false,{},"Failed to get Sections"))
+      }
+}
+export { addSection,getSections };

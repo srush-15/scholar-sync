@@ -44,5 +44,14 @@ const addCourse = async (req, res) => {
       .json(new ApiResponse(false, {}, "Failed to create new course"));
   }
 };
+const getCourses = async(req,res)=>{
+  try {
+    const existingCourses = await Course.find().populate('instructor');
+    res.status(200).json(new ApiResponse(true,existingCourses,"Courses fetched successfully"));
+  } catch (error) {
+    console.log("An error happened while getting courses ",error);
+    res.status(500).json(new ApiResponse(false,{},"Failed to get courses"))
+  }
+}
 
-export { addCourse };
+export { addCourse,getCourses};

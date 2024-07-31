@@ -44,4 +44,14 @@ const addInstructor = async (req, res) => {
   }
 };
 
-export { addInstructor };
+const getInstructors = async (req,res)=>{
+  try {
+    const existingInstructors = await Instructor.find();
+    res.status(200).json(new ApiResponse(true,existingInstructors,"Instructors fetched successfully"));
+  } catch (error) {
+    console.log("An error happened while getting Insturctors ",error);
+    res.status(500).json(new ApiResponse(false,{},"Failed to get instructors"))
+  }
+}
+
+export { addInstructor,getInstructors };

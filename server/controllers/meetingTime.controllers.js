@@ -35,4 +35,13 @@ const addMeetingTime = async (req, res) => {
   }
 };
 
-export { addMeetingTime };
+const getMeetingTimes = async(req,res)=>{
+  try {
+    const existingMeetingTimes = await MeetingTime.find();
+    res.status(200).json(new ApiResponse(true,existingMeetingTimes,"MeetingTimes fetched successfully"));
+  } catch (error) {
+    console.log("An error happened while getting MeetingTimes ",error);
+    res.status(500).json(new ApiResponse(false,{},"Failed to get MeetingTimes"))
+  }
+}
+export { addMeetingTime ,getMeetingTimes};

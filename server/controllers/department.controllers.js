@@ -54,5 +54,13 @@ const addDepartment = async (req, res) => {
       .json(new ApiResponse(false, {}, "Failed to create new department"));
   }
 };
-
-export { addDepartment };
+const getDepartments = async(req,res)=>{
+    try {
+      const existingDepartments = await Department.find().populate('courses');
+      res.status(200).json(new ApiResponse(true,existingDepartments,"Departments fetched successfully"));
+    } catch (error) {
+      console.log("An error happened while getting Departments ",error);
+      res.status(500).json(new ApiResponse(false,{},"Failed to get departments"))
+    }
+}
+export { addDepartment ,getDepartments };

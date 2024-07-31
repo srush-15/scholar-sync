@@ -28,4 +28,13 @@ const addRoom = async (req,res) => {
     }
 };
 
-export { addRoom };
+const getRooms = async (req,res)=>{
+    try {
+        const existingRooms = await Room.find();
+        res.status(200).json(new ApiResponse(true,existingRooms,"Rooms fetched successfully"));
+      } catch (error) {
+        console.log("An error happened while getting Rooms ",error);
+        res.status(500).json(new ApiResponse(false,{},"Failed to get Rooms"))
+      }
+}
+export { addRoom ,getRooms};
