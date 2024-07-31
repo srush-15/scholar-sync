@@ -1,6 +1,6 @@
 import { User } from "../db/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import jwt from "jsonwebtoken"
 const options = {
   httpOnly: true,
   secure: true,
@@ -128,4 +128,40 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, logoutUser };
+const refreshAccessToken = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      res.status(404).json(new ApiResponse(false, {}, "No refresh token"));
+      return;
+    }
+    const tokenPayload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(tokenPayload._id);
+    if(!user || user.refreshToken !== token){
+      res
+        .status(401)
+        .clearCookie("refreshToken", options)
+        .json(
+          new ApiResponse(false, {}, "Unauthorized request")
+        );
+      return;
+    }
+    // refresh token rotation
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(new ApiResponse(true, {}, "Token generated successfully"));
+  } catch (error) {
+    console.log("Failed to verify token ", error);
+    res.status(401).json(new ApiResponse(false, {}, "Unauthorized request"));
+  }
+};
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
